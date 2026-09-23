@@ -7,7 +7,7 @@ local TweenService = game:GetService("TweenService")
 
 local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
-local IMAGE_ID = "YOUR_IMAGE_ID"
+local IMAGE_ID = "119422664257704"
 
 local PURPLE = Color3.fromRGB(150,70,255)
 local DARK = Color3.fromRGB(10,12,17)
