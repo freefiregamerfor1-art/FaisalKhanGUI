@@ -8,10 +8,22 @@ local TweenService = game:GetService("TweenService")
 local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 
+--==================================================
+-- SETTINGS
+--==================================================
+
+local IMAGE_ID = "YOUR_IMAGE_ID"
+
 local PURPLE = Color3.fromRGB(150, 70, 255)
 local DARK = Color3.fromRGB(10, 12, 17)
+local PANEL = Color3.fromRGB(16, 19, 26)
 local ROW = Color3.fromRGB(23, 26, 34)
 local WHITE = Color3.fromRGB(245, 245, 250)
+local GREY = Color3.fromRGB(145, 148, 158)
+
+--==================================================
+-- GUI
+--==================================================
 
 local Gui = Instance.new("ScreenGui")
 Gui.Name = "FaisalKhanGUI"
@@ -21,10 +33,8 @@ Gui.Parent = PlayerGui
 
 local Main = Instance.new("Frame")
 Main.Name = "Main"
-Main.Size = UDim2.new(0.92, 0, 0.82, 0)
-Main.SizeConstraint = Enum.SizeConstraint.RelativeXY
-Main.AnchorPoint = Vector2.new(0.5, 0.5)
-Main.Position = UDim2.new(0.5, 0, 0.5, 0)
+Main.Size = UDim2.fromOffset(430, 650)
+Main.Position = UDim2.new(0.5, -215, 0.5, -325)
 Main.BackgroundColor3 = DARK
 Main.BorderSizePixel = 0
 Main.Parent = Gui
@@ -39,7 +49,10 @@ Stroke.Thickness = 1.5
 Stroke.Transparency = 0.25
 Stroke.Parent = Main
 
+--==================================================
 -- DRAG
+--==================================================
+
 local Dragging = false
 local DragStart
 local StartPosition
@@ -47,9 +60,11 @@ local StartPosition
 Main.InputBegan:Connect(function(Input)
     if Input.UserInputType == Enum.UserInputType.MouseButton1
         or Input.UserInputType == Enum.UserInputType.Touch then
+
         Dragging = true
         DragStart = Input.Position
         StartPosition = Main.Position
+
         Input.Changed:Connect(function()
             if Input.UserInputState == Enum.UserInputState.End then
                 Dragging = false
@@ -60,9 +75,12 @@ end)
 
 UserInputService.InputChanged:Connect(function(Input)
     if not Dragging then return end
+
     if Input.UserInputType == Enum.UserInputType.MouseMovement
         or Input.UserInputType == Enum.UserInputType.Touch then
+
         local Delta = Input.Position - DragStart
+
         Main.Position = UDim2.new(
             StartPosition.X.Scale,
             StartPosition.X.Offset + Delta.X,
@@ -72,7 +90,10 @@ UserInputService.InputChanged:Connect(function(Input)
     end
 end)
 
+--==================================================
 -- TITLE
+--==================================================
+
 local Title = Instance.new("TextLabel")
 Title.BackgroundTransparency = 1
 Title.Position = UDim2.fromOffset(25, 15)
@@ -92,7 +113,10 @@ TitleGradient.Color = ColorSequence.new({
 })
 TitleGradient.Parent = Title
 
+--==================================================
 -- MINIMIZE
+--==================================================
+
 local Minimize = Instance.new("TextButton")
 Minimize.Name = "Minimize"
 Minimize.Size = UDim2.fromOffset(48, 48)
@@ -114,7 +138,10 @@ MinStroke.Color = Color3.fromRGB(70, 74, 85)
 MinStroke.Thickness = 1
 MinStroke.Parent = Minimize
 
+--==================================================
 -- CONTENT
+--==================================================
+
 local Content = Instance.new("Frame")
 Content.BackgroundTransparency = 1
 Content.Position = UDim2.fromOffset(15, 80)
@@ -126,10 +153,14 @@ List.Padding = UDim.new(0, 8)
 List.SortOrder = Enum.SortOrder.LayoutOrder
 List.Parent = Content
 
--- TOGGLES
+--==================================================
+-- TOGGLE FUNCTION
+--==================================================
+
 local Toggles = {}
 
 local function CreateToggle(Name, Default)
+
     local Row = Instance.new("Frame")
     Row.Name = Name
     Row.Size = UDim2.new(1, 0, 0, 58)
@@ -179,14 +210,20 @@ local function CreateToggle(Name, Default)
     local function Update()
         if State then
             Button.BackgroundColor3 = PURPLE
-            TweenService:Create(Knob, TweenInfo.new(0.15), {
-                Position = UDim2.new(1, -27, 0.5, -12)
-            }):Play()
+
+            TweenService:Create(
+                Knob,
+                TweenInfo.new(0.15),
+                {Position = UDim2.new(1, -27, 0.5, -12)}
+            ):Play()
         else
             Button.BackgroundColor3 = Color3.fromRGB(55, 58, 68)
-            TweenService:Create(Knob, TweenInfo.new(0.15), {
-                Position = UDim2.new(0, 3, 0.5, -12)
-            }):Play()
+
+            TweenService:Create(
+                Knob,
+                TweenInfo.new(0.15),
+                {Position = UDim2.new(0, 3, 0.5, -12)}
+            ):Play()
         end
     end
 
@@ -198,9 +235,16 @@ local function CreateToggle(Name, Default)
     Update()
 
     Toggles[Name] = {
-        Get = function() return State end,
-        Set = function(Value) State = Value; Update() end
+        Get = function()
+            return State
+        end,
+        Set = function(Value)
+            State = Value
+            Update()
+        end
     }
+
+    return Row
 end
 
 CreateToggle("Aim Assist", true)
@@ -211,8 +255,12 @@ CreateToggle("Names", true)
 CreateToggle("Health", true)
 CreateToggle("Distance", true)
 
--- SLIDERS
+--==================================================
+-- SLIDER
+--==================================================
+
 local function CreateSlider(Name, Minimum, Maximum, Default)
+
     local Frame = Instance.new("Frame")
     Frame.Size = UDim2.new(1, 0, 0, 78)
     Frame.BackgroundColor3 = ROW
@@ -256,10 +304,11 @@ local function CreateSlider(Name, Minimum, Maximum, Default)
     BarCorner.CornerRadius = UDim.new(1, 0)
     BarCorner.Parent = Bar
 
-    local DefaultPercent = (Default - Minimum) / (Maximum - Minimum)
-
     local Fill = Instance.new("Frame")
-    Fill.Size = UDim2.new(DefaultPercent, 0, 1, 0)
+    Fill.Size = UDim2.new(
+        (Default - Minimum) / (Maximum - Minimum),
+        0, 1, 0
+    )
     Fill.BackgroundColor3 = PURPLE
     Fill.BorderSizePixel = 0
     Fill.Parent = Bar
@@ -271,7 +320,10 @@ local function CreateSlider(Name, Minimum, Maximum, Default)
     local Knob = Instance.new("Frame")
     Knob.Size = UDim2.fromOffset(18, 18)
     Knob.AnchorPoint = Vector2.new(0.5, 0.5)
-    Knob.Position = UDim2.new(DefaultPercent, 0, 0.5, 0)
+    Knob.Position = UDim2.new(
+        (Default - Minimum) / (Maximum - Minimum),
+        0, 0.5, 0
+    )
     Knob.BackgroundColor3 = WHITE
     Knob.BorderSizePixel = 0
     Knob.Parent = Bar
@@ -284,12 +336,16 @@ local function CreateSlider(Name, Minimum, Maximum, Default)
     local Sliding = false
 
     local function SetValue(X)
-        if Bar.AbsoluteSize.X <= 0 then return end
         local Percent = math.clamp(
-            (X - Bar.AbsolutePosition.X) / Bar.AbsoluteSize.X,
+            (X - Bar.AbsolutePosition.X) /
+            Bar.AbsoluteSize.X,
             0, 1
         )
-        ValueNumber = math.floor(Minimum + (Maximum - Minimum) * Percent)
+
+        ValueNumber = math.floor(
+            Minimum + (Maximum - Minimum) * Percent
+        )
+
         Fill.Size = UDim2.new(Percent, 0, 1, 0)
         Knob.Position = UDim2.new(Percent, 0, 0.5, 0)
         Value.Text = tostring(ValueNumber)
@@ -298,6 +354,7 @@ local function CreateSlider(Name, Minimum, Maximum, Default)
     Bar.InputBegan:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1
             or Input.UserInputType == Enum.UserInputType.Touch then
+
             Sliding = true
             SetValue(Input.Position.X)
         end
@@ -305,8 +362,10 @@ local function CreateSlider(Name, Minimum, Maximum, Default)
 
     UserInputService.InputChanged:Connect(function(Input)
         if not Sliding then return end
+
         if Input.UserInputType == Enum.UserInputType.MouseMovement
             or Input.UserInputType == Enum.UserInputType.Touch then
+
             SetValue(Input.Position.X)
         end
     end)
@@ -314,17 +373,25 @@ local function CreateSlider(Name, Minimum, Maximum, Default)
     UserInputService.InputEnded:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1
             or Input.UserInputType == Enum.UserInputType.Touch then
+
             Sliding = false
         end
     end)
 
-    return {Get = function() return ValueNumber end}
+    return {
+        Get = function()
+            return ValueNumber
+        end
+    }
 end
 
 local FOV = CreateSlider("FOV", 20, 250, 150)
 local Smoothness = CreateSlider("Smoothness", 1, 100, 35)
 
+--==================================================
 -- FOOTER
+--==================================================
+
 local Footer = Instance.new("TextLabel")
 Footer.BackgroundTransparency = 1
 Footer.Size = UDim2.new(1, 0, 0, 30)
@@ -334,19 +401,23 @@ Footer.TextSize = 14
 Footer.Font = Enum.Font.GothamBold
 Footer.Parent = Content
 
--- SIMPLE MINIMIZED BUTTON: NO IMAGE / NO LOGO
-local Mini = Instance.new("TextButton")
-Mini.Name = "Mini"
-Mini.Size = UDim2.fromOffset(48, 48)
+--==================================================
+-- MINIMIZED IMAGE BUTTON
+--==================================================
+
+local Mini = Instance.new("ImageButton")
+Mini.Name = "MiniImage"
+Mini.Size = UDim2.fromOffset(72, 72)
 Mini.Position = Main.Position
 Mini.BackgroundColor3 = DARK
-Mini.Text = ""
+Mini.Image = "rbxassetid://" .. IMAGE_ID
+Mini.ScaleType = Enum.ScaleType.Crop
 Mini.Visible = false
 Mini.AutoButtonColor = false
 Mini.Parent = Gui
 
 local MiniCorner = Instance.new("UICorner")
-MiniCorner.CornerRadius = UDim.new(0, 12)
+MiniCorner.CornerRadius = UDim.new(0, 14)
 MiniCorner.Parent = Mini
 
 local MiniStroke = Instance.new("UIStroke")
@@ -354,16 +425,31 @@ MiniStroke.Color = PURPLE
 MiniStroke.Thickness = 2
 MiniStroke.Parent = Mini
 
+--==================================================
+-- MINIMIZE / RESTORE
+--==================================================
+
 Minimize.MouseButton1Click:Connect(function()
-    Mini.Position = Main.Position
+
+    local CurrentPosition = Main.Position
+    Mini.Position = CurrentPosition
+
     Main.Visible = false
     Mini.Visible = true
+
 end)
 
 Mini.MouseButton1Click:Connect(function()
+
     Main.Position = Mini.Position
+
     Mini.Visible = false
     Main.Visible = true
+
 end)
 
-print("FAISAL KHAN GUI loaded - no image / no logo")
+--==================================================
+-- OPTIONAL: RIGHT CLICK / HOLD DOES NOTHING
+--==================================================
+
+print("FAISAL KHAN GUI loaded")
