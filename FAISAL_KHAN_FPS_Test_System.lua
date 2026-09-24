@@ -614,6 +614,9 @@ local function GetScreenCenter()
         Viewport.X/2,
         Viewport.Y/2
     )
+        end
+
+local function FindBestTarget()
 end
 
 local function GetScreenDistance(Part)
