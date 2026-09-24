@@ -289,7 +289,9 @@ FOVCorner.Parent = FOVCircle
 local Stroke = Instance.new("UIStroke")
 Stroke.Thickness = 2
 Stroke.Color = WHITE
-Stroke.Parent = FOVCirclelocal function GetAimPart(Character)
+Stroke.Parent = FOVCircle
+
+local function GetAimPart(Character)
 
     if not Character then
         return nil
@@ -646,7 +648,9 @@ local function GetScreenDistance(Part)
     return
         (Target-Center).Magnitude,
         true
-endlocal function FindBestTarget()
+end
+
+local function FindBestTarget()
 
     local BestTarget = nil
     local BestDistance = math.huge
